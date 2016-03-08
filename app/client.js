@@ -1,15 +1,29 @@
-http = require('http');
+const http = require('http');
+const xml2js = require('xml2js');
 
-const key = '';
-const userID = '53482783';
+// TODO check key
+const options = {
+  host: 'www.goodreads.com',
+  hostname: 'www.goodreads.com',
+  path: `/review/list?v=2&id=53482783&key=`
+};
 
-http.get(`http://www.goodreads.com/review/list?v=2&id=${userID}&key=${key}`, (res) => {
-  res.setEncoding('utf8');
-  console.log(`Got response: ${res.statusCode}`);
+const getRequest = http.request(options, (res) => {
+    var tmp = [];
+    var parserXml = new xml2js.Parser();
+    res.setEncoding('utf8');
 
-  res.on('data', (data) => {
-    console.log(data);
-  });
-}).on('error', (e) => {
-  console.log(`Got error: ${e.message}`);
-});
+    res.on('data', (chunk) => {
+      tmp.push(chunk);
+    });
+
+    res.on('end', () => {
+      const bodyResponse = tmp.join();
+      parserXml.parseString(bodyResponse);
+    });
+
+    parserXml.on('end', (result) => {
+      console.log(result);
+    });
+}).end();
+
