@@ -1,11 +1,10 @@
 const http = require('http');
 const xml2js = require('xml2js');
 
-// TODO check key
 const options = {
   host: 'www.goodreads.com',
   hostname: 'www.goodreads.com',
-  path: `/review/list?v=2&id=53482783&key=`
+  path: `/review/list?v=2&id=53482783&key=K2fnaRF8GZHJ1mXyYRfaQ`
 };
 
 const getRequest = http.request(options, (res) => {
