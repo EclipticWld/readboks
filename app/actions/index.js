@@ -1,3 +1,3 @@
-const goodreadsAPI = require('../api/goodreadsAPI.js');
+import { getUserItemList } from '../lib/api.js';
 
-goodreadsAPI.getUserItemList();
+getUserItemList();
