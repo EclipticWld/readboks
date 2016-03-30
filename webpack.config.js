@@ -6,9 +6,11 @@ const precss = require('precss');
 const buildPath = path.resolve(__dirname, './build/');
 
 const configClient = {
-  entry: './app/client.js',
-  output: buildPath,
-  filename: 'client-bundle.js',
+  entry: ['webpack-hot-middleware/client', './app/client.js'],
+  output: {
+    path: buildPath,
+    filename: 'client-bundle.js'
+  },
   module: {
     loaders: [
       {
@@ -29,6 +31,11 @@ const configClient = {
       }
     ]
   },
+  plugins: [
+    new webpack.optimize.OccurenceOrderPlugin(),
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.NoErrorsPlugin()
+  ],
   postcss: () => {
     return [autoprefixer, precss];
   }

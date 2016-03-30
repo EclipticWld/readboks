@@ -1,28 +1,31 @@
-const parseXmlString = require('xml2js').parseString;
+require('es6-promise').polyfill();
+require('isomorphic-fetch');
+const Q = require('q');
+const xml2js = require('xml2js');
 
-export function getUserItemList() {
-  return fetch('https://www.goodreads.com/review/list', {
-    mode: 'no-cors',
-    method: 'POST',
-    headers: {
-      'Content-type': 'application/xml; charset=utf-8'
-    },
-    body: JSON.stringify({
-      v: 2,
-      id: 53482783,
-      key: 'K2fnaRF8GZHJ1mXyYRfaQ'
-    })
-  })
+function convert2js(input) {
+  const deferred = Q.defer();
+  const parser = new xml2js.Parser();
+  parser.parseString(input, function (err, stdout, stderr) {
+    if (err)  {
+      return deferred.reject(err);
+    }
+    return deferred.resolve(stdout);
+  });
+  return deferred.promise;
+}
+
+function callApi() {
+  return fetch('http://www.goodreads.com/review/list/?v=2&id=53482783&key=K2fnaRF8GZHJ1mXyYRfaQ')
     .then((response) => {
+      if (response.status >= 400) {
+        throw new Error("Bad response from server");
+      }
       return response.text();
     })
-    .then((body) => {
-      console.log(body);
-      parseXmlString(body, (err, result) => {
-        document.write(result);
-      });
-    })
-    .catch((err) => {
-      console.log('Error ', err);
+    .then((xml) => {
+      return convert2js(xml);
     });
 }
+
+module.exports = { callApi };
